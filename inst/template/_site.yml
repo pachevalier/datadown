@@ -1,0 +1,12 @@
+name: "DataDown"
+navbar:
+  title: "DataDown"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Départements"
+      href: departements.html
+output:
+  html_document:
+    theme: cosmo
+    highlight: textmate

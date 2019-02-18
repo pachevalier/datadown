@@ -1,0 +1,10 @@
+---
+title: "Départements"
+output: "html_document"
+---
+
+```{r echo=FALSE, message=FALSE, results='asis'}
+table_depts %>%
+  glue::glue_data("* [{nccenr}](departement_{dep}.html)")
+```
+

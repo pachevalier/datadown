@@ -1,0 +1,22 @@
+---
+title: "Home"
+output: "html_document"
+---
+
+```{r echo=FALSE, message=FALSE}
+library(tidyverse)
+library(tricky)
+library(rmarkdown)
+library(knitr)
+auto_read_tsv <- function(file, ...) {
+  .encoding <- guess_encoding(file = file) %>% slice(1) %>% pull(encoding)
+  cat("Detected encoding is ... ", .encoding, "\n")
+  read_tsv(file = file, locale = locale(encoding = .encoding))
+}
+
+table_depts <- auto_read_tsv(file = "../../data-raw/depts2018.txt") %>%
+  set_standard_names() 
+
+table_depts %>%
+  glimpse()
+```

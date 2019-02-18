@@ -1,0 +1,10 @@
+---
+title: "Fiche"
+output: "html_document"
+params:
+  axis: "01"
+---
+
+```{r}
+params$axis
+```
