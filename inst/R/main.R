@@ -68,6 +68,53 @@ create_site_structure(
 )
 render_site(input = "inst/sandbox/")
 
+listify <- function(tbl, axis) {
+  purrr::map(
+    .x = distinct(.data = tbl, !!enquo(axis)) %>% pull(!!enquo(axis)),
+    .f = function(x) {list(text = x, href = paste0("departement", x, ".html"))}
+    )
+}
+listify(tbl = table_depts, axis = dep) %>%
+  yaml::as.yaml()
+
+
+create_site_structure_yaml <- function(tbl, axis, name, output) {
+  list(
+    name = name,
+    navbar = list(
+      title = "DataDown",
+      left = list(
+        list(
+          text = "Home",
+          href = "index.html"),
+        list(
+          text = "Départements",
+          href = "departements.html",
+          menu = listify(tbl = tbl, axis = !!enquo(axis))
+      )
+    ),
+    output = list(
+      html_document = list(
+        theme = "cosmo",
+        highlight = "textmate"
+        )
+      )
+    )
+  ) %>%
+  yaml::write_yaml(file = file.path(output, "_site.yml"))
+  }
+
+create_site_structure_yaml(tbl = table_depts, axis = dep, name = "Datadown", output = here("inst/sandbox/"))
+render_site(input = "inst/sandbox/")
+
+build_homepage <- function(tbl, output) {
+  cat(
+    "---\ntitle: 'Home'\noutput: 'html_document'\n---\n\n\n",
+    file = paste0(output, "index.Rmd")
+    )
+}
+build_homepage(tbl = table_depts, output = here("inst/sandbox/"))
+
 # create_axis_template <- function(data, axis)
 # build_site()
 # build_axis()
