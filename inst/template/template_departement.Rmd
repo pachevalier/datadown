@@ -6,5 +6,10 @@ params:
 ---
 
 ```{r}
-params$axis
+table_depts %>%
+  filter(dep == params$axis) %>%
+  glue_data("Département : {nccenr} ({dep}) \n 
+            Cheflieu : [{cheflieu}](https://geo.api.gouv.fr/communes?code={cheflieu}) \n
+            Région : [{region}](region_{region}.html)
+            ")
 ```

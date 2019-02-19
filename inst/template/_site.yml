@@ -6,6 +6,9 @@ navbar:
       href: index.html
     - text: "Départements"
       href: departements.html
+      menu:
+      - text: "01"
+        href: departement_01.html
 output:
   html_document:
     theme: cosmo
