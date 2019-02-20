@@ -7,7 +7,6 @@ library(glue)
 library(stringr)
 library(rlang)
 render_site(input = "inst/template/")
-
 auto_read_tsv <- function(file, ...) {
   .encoding <- guess_encoding(file = file) %>% slice(1) %>% pull(encoding)
   cat("Detected encoding is ... ", .encoding, "\n")
@@ -18,67 +17,19 @@ table_depts <- auto_read_tsv(file = here("data-raw/depts2018.txt")) %>%
 table_depts %>%
   glimpse()
 
-create_site_structure <- function(tbl, axis, name, output) {
-  cat(
-    glue("name: '{name}'"),
-    "navbar:\n title: 'DataDown'\n left:\n  - text: 'Home'\n    href: index.html",
-    "output:\n html_document:\n  theme: cosmo\n  highlight: textmate",
-    sep = "\n",
-    file = paste0(output, "_site.yml")
-    )
-  cat(
-    "---\ntitle: 'Home'\noutput: 'html_document'\n---\n\n\n",
-    file = paste0(output, "index.Rmd")
-    )
-}
-create_site_structure(
-  tbl = table_depts,
-  name = "Code officiel géographique",
-  axis = dep,
-  output = here('inst/sandbox/')
-  )
-render_site(input = "inst/sandbox/")
-
-create_site_structure <- function(tbl, axis, name, output) {
-  cat(
-    glue("name: '{name}'"),
-    "navbar:\n title: 'DataDown'\n left:\n   - text: 'Home'\n   href: index.html",
-    glue(
-      "  - text: 'Départements'\n    href: departements.html\n    menu:",
-      .trim = FALSE),
-    glue_data(
-      dplyr::distinct(.data = tbl, !!enquo(axis)),
-      "    - text: '{dep}'\n      href: departement_{dep}.html",
-      .trim = FALSE
-      ),
-    "output:\n html_document:\n  theme: cosmo\n  highlight: textmate",
-    sep = "\n",
-    file = paste0(output, "_site.yml")
-    )
-  cat(
-  "---\ntitle: 'Home'\noutput: 'html_document'\n---\n\n\n",
-  file = paste0(output, "index.Rmd")
-  )
-}
-create_site_structure(
-  tbl = table_depts,
-  name = "Code officiel géographique",
-  axis = dep,
-  output = here('inst/sandbox/')
-)
-render_site(input = "inst/sandbox/")
-
 listify <- function(tbl, axis) {
+  prefix <- quo_name(quo = enquo(axis))
   purrr::map(
     .x = distinct(.data = tbl, !!enquo(axis)) %>% pull(!!enquo(axis)),
-    .f = function(x) {list(text = x, href = paste0("departement", x, ".html"))}
+    .f = function(x) {list(text = x, href = paste0(prefix, x, ".html"))}
     )
 }
 listify(tbl = table_depts, axis = dep) %>%
   yaml::as.yaml()
 
-
 create_site_structure_yaml <- function(tbl, axis, name, output) {
+  axe_slug <- quo_name(quo = enquo(axis))
+  axe_title <- str_to_title(quo_name(quo = enquo(axis)))
   list(
     name = name,
     navbar = list(
@@ -88,8 +39,8 @@ create_site_structure_yaml <- function(tbl, axis, name, output) {
           text = "Home",
           href = "index.html"),
         list(
-          text = "Départements",
-          href = "departements.html",
+          text = axe_title,
+          href = paste0(axe_slug, ".html"),
           menu = listify(tbl = tbl, axis = !!enquo(axis))
       )
     ),
@@ -104,12 +55,21 @@ create_site_structure_yaml <- function(tbl, axis, name, output) {
   yaml::write_yaml(file = file.path(output, "_site.yml"))
   }
 
-create_site_structure_yaml(tbl = table_depts, axis = dep, name = "Datadown", output = here("inst/sandbox/"))
+create_site_structure_yaml(
+  tbl = table_depts,
+  axis = dep,
+  name = "Datadown",
+  output = here("inst/sandbox/")
+  )
+
 render_site(input = "inst/sandbox/")
 
 build_homepage <- function(tbl, output) {
-  cat(
-    "---\ntitle: 'Home'\noutput: 'html_document'\n---\n\n\n",
+  cat("---",
+      yaml::as.yaml(list(title = 'Home', output = 'html_document')),
+      "---",
+      "\n\n## Glimpse",
+      sep = "\n",
     file = paste0(output, "index.Rmd")
     )
 }

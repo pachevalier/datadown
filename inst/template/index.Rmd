@@ -3,7 +3,7 @@ title: "Home"
 output: "html_document"
 ---
 
-```{r echo=FALSE, message=FALSE}
+```{r echo=FALSE, message=FALSE, results='markup'}
 library(tidyverse)
 library(tricky)
 library(rmarkdown)
