@@ -62,18 +62,33 @@ create_site_structure_yaml(
   output = here("inst/sandbox/")
   )
 
-render_site(input = "inst/sandbox/")
-
 build_homepage <- function(tbl, output) {
   cat("---",
       yaml::as.yaml(list(title = 'Home', output = 'html_document')),
       "---",
-      "\n\n## Glimpse",
+      "\n\n## Glimpse\n\n",
+      "```{r echo=FALSE, message=FALSE}\ntable_depts %>%\nglimpse()\n```",
       sep = "\n",
     file = paste0(output, "index.Rmd")
     )
 }
 build_homepage(tbl = table_depts, output = here("inst/sandbox/"))
+
+#
+# build_axis_template <- function(tbl, axis, output) {
+# #  expression <- quo_name(table_depts %>% filter(!!enquo(axis) == enquo(params$axis)))
+#   cat("---",
+#       yaml::as.yaml(list(title = 'Home', output = 'html_document', params = list(axis = ""))),
+#       "---",
+#       "\n\n## Glimpse\n\n",
+#       paste0("```{r echo=FALSE, message=FALSE}\n", expression, "\n\n```"),
+#       sep = "\n",
+#       file = paste0(output, "axis_template.Rmd")
+#   )
+# }
+# build_axis_template(tbl = table_depts, output = here("inst/sandbox/"))
+
+render_site(input = "inst/sandbox/")
 
 # create_axis_template <- function(data, axis)
 # build_site()
